@@ -1,7 +1,7 @@
-pip install -r requirements.txt
-pip install pyinstaller
+pip3 install -r requirements.txt
+pip3 install pyinstaller
 
-pyinstaller --add-data "resources/campfire.png:." campfire.py
+python3 -m PyInstaller --add-data "resources/campfire.png:." campfire.py
 
 APP_NAME="Campfire"
 APP_DIR="${APP_NAME}.app"
