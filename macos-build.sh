@@ -1,4 +1,5 @@
 pip install -r requirements.txt
+pip install pyinstaller
 
 pyinstaller --add-data "resources/campfire.png:." campfire.py
 
