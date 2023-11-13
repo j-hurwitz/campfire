@@ -21,7 +21,7 @@ def get_or_create_config():
             "api_key": None,
             "voice": "echo",
             "hd_quality": False,
-            "output_directory": bundle_dir,
+            "output_directory": f"{home_path}/Desktop",
             "filename": "marshmallow.mp3"
         }
         with open(config_path, 'w') as config_file:
