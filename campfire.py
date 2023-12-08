@@ -5,6 +5,7 @@ import tkinter as tk
 from tkinter import ttk, PhotoImage, filedialog, simpledialog, Radiobutton, StringVar, BooleanVar, Checkbutton
 import pygame
 import json
+import datetime
 
 # https://coderslegacy.com/add-image-data-files-in-pyinstaller-exe/
 # https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
@@ -21,9 +22,20 @@ def get_or_create_config():
             "api_key": None,
             "voice": "echo",
             "hd_quality": False,
-            "output_directory": f"{home_path}/Desktop",
-            "filename": "marshmallow.mp3"
+            "output_directory": None,  # Initialize with None
+            "filename": "test.mp3"  # Fixed filename
         }
+
+        # Prompt for default output directory with Documents as the default folder
+        root = tk.Tk()
+        root.withdraw()  # Hide the root window
+        os.mkdir(f"{home_path}/Documents/campfire")
+        default_directory = os.path.join(home_path, 'Documents', 'campfire')
+        output_directory = filedialog.askdirectory(parent=root, title="Select Default Output Directory", initialdir=default_directory)
+        root.destroy()  # Destroy the root window after input
+
+        config["output_directory"] = output_directory
+
         with open(config_path, 'w') as config_file:
             json.dump(config, config_file, indent=4)
     else:
@@ -58,9 +70,15 @@ def on_button_click():
     voice_selection = voice_var.get()
     hd_quality = hd_var.get()
     output_directory = directory_entry.get()
-    filename = filename_entry.get()
 
-    audio_filename = os.path.join(output_directory, filename if filename else "marshmallow.mp3")
+    ### construct filename ###
+    # Get the current timestamp
+    timestamp = datetime.datetime.now()
+    # Format the timestamp as a string with microsecond precision
+    timestamp_str = timestamp.strftime("%Y-%m-%d %H.%M.%S")
+    filename = f"{timestamp_str} - {'HD - ' if hd_quality else ''}{input_text[:50]}.mp3"
+
+    audio_filename = os.path.join(output_directory, filename)
     print("Performing text to speech...")
 
     client = OpenAI()
@@ -195,15 +213,8 @@ hd_no = Radiobutton(hd_frame, text="No", variable=hd_var, value=False)
 hd_no.pack(anchor=tk.W)
 
 # Filename entry frame
-filename_frame = tk.Frame(window)
-filename_frame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=10)
-
-filename_label = tk.Label(filename_frame, text="Filename:")
-filename_label.pack(side=tk.LEFT, padx=5)
-
-filename_entry = tk.Entry(filename_frame, width=20)
-filename_entry.insert(0, config.get("filename"))
-filename_entry.pack(side=tk.LEFT, padx=5)
+#filename_frame = tk.Frame(window)
+#filename_frame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=10)
 
 # Directory picker frame
 directory_frame = tk.Frame(window)
